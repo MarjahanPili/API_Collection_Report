@@ -1,0 +1,955 @@
+{
+  "info": {
+    "_postman_id": "0bcadc4f-5e89-41ef-9827-4efb83ac9cfd",
+    "name": "Dmoney_API_Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "18991706"
+  },
+  "item": [
+    {
+      "name": "Admin Login",
+      "item": [
+        {
+          "name": "Admin login",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var url = \"http://localhost:5000\";\r",
+                  "pm.collectionVariables.set(\"Base_url\", url);\r",
+                  "\r",
+                  "var key = \"ROADTOSDET\";\r",
+                  "pm.collectionVariables.set(\"secretkey\", key);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsondata = pm.response.json();\r",
+                  "var token = jsondata.token;\r",
+                  "pm.collectionVariables.set(\"Admin_token\", token);\r",
+                  "\r",
+                  "pm.test(\"User can Login Successfully\",function()\r",
+                  "{\r",
+                  "    pm.expect(jsondata.message).to.eql(\"Login successful\");\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"admin@dmoney.com\",\r\n  \"password\": \"1234\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_url}}/user/login",
+              "host": [
+                "{{Base_url}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Create",
+      "item": [
+        {
+          "name": "Agent creation",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var randomId = _.random( 100000,999999 );\r",
+                  "\r",
+                  "var phonenumber = \"01701\" + randomId;\r",
+                  "\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"ramdomID\", randomId);\r",
+                  "pm.collectionVariables.set(\"randomPhoneNumber\", phonenumber);\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsondata = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Agent created successfully\", function () {\r",
+                  "    pm.expect(jsondata.message).to.eql(\"User created\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "}); \r",
+                  "\r",
+                  "var id = jsondata.user.id;\r",
+                  "var email = jsondata.user.email;    \r",
+                  "var phoneNum = jsondata.user.phone_number;\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"Agentid\", id);\r",
+                  "pm.collectionVariables.set(\"Agentemail\", email);\r",
+                  "pm.collectionVariables.set(\"AgentphonNumber\", phoneNum);\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{Admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-AUTH-SECRET-KEY",
+                "value": "{{secretkey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"{{$randomFullName}}\",\r\n  \"email\": \"marjahan6469+{{ramdomID}}@gmail.com\",\r\n  \"password\": \"1234\",\r\n  \"phone_number\":\"{{randomPhoneNumber}}\",\r\n  \"nid\": \"9876543210\",\r\n  \"role\": \"Agent\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/user/create",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "user",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Customer1_Creation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsondata = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status code is 201\", function () { \r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Customer created successfully\", function()\r",
+                  "{ \r",
+                  "    pm.expect(jsondata.message).to.eql(\"User created\");\r",
+                  "\r",
+                  "});\r",
+                  "\r",
+                  "var id = jsondata.user.id;\r",
+                  "var email = jsondata.user.email;\r",
+                  "var phonenumber = jsondata.user.phone_number;\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"Customer1_id\", id);\r",
+                  "pm.collectionVariables.set(\"Customer1_email\", email);\r",
+                  "pm.collectionVariables.set(\"Customer1_phone_number\", phonenumber);\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var randomId = _.random( 100000,999999 );\r",
+                  "\r",
+                  "var phonenumber = \"01701\" + randomId;\r",
+                  "\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"ramdomID\", randomId);\r",
+                  "pm.collectionVariables.set(\"randomPhoneNumber\", phonenumber);\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{Admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-AUTH-SECRET-KEY",
+                "value": "{{secretkey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"{{$randomFullName}}\",\r\n  \"email\": \"marjahan6469+{{ramdomID}}@gmail.com\",\r\n  \"password\": \"pass1234\",\r\n  \"phone_number\": \"{{randomPhoneNumber}}\",\r\n  \"nid\": \"9876543210\",\r\n  \"role\": \"Customer\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_url}}/user/create",
+              "host": [
+                "{{Base_url}}"
+              ],
+              "path": [
+                "user",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Customer2_Creation(self_reg)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsondata = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status code is 201\", function () { \r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Customer2 created successfully\", function()\r",
+                  "{ \r",
+                  "    pm.expect(jsondata.message).to.contain(\"Registration successful\");\r",
+                  "\r",
+                  "});\r",
+                  "\r",
+                  "var id = jsondata.user.id;\r",
+                  "var email = jsondata.user.email;\r",
+                  "var phonenumber = jsondata.user.phone_number;\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"Customer2_id\", id);\r",
+                  "pm.collectionVariables.set(\"Customer2_email\", email);\r",
+                  "pm.collectionVariables.set(\"Customer2_phone_number\", phonenumber);\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var randomId = _.random( 100000,999999 );\r",
+                  "\r",
+                  "var phonenumber = \"01701\" + randomId;\r",
+                  "\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"ramdomID\", randomId);\r",
+                  "pm.collectionVariables.set(\"randomPhoneNumber\", phonenumber);\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{Admin_token}}",
+                "type": "text",
+                "disabled": true
+              },
+              {
+                "key": "X-AUTH-SECRET-KEY",
+                "value": "{{secretkey}}",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"{{$randomFullName}}\",\r\n  \"email\": \"marjahan6469+{{ramdomID}}@gmail.com\",\r\n  \"password\": \"pass1234\",\r\n  \"phone_number\": \"{{randomPhoneNumber}}\",\r\n  \"nid\": \"9876543210\",\r\n  \"role\": \"Customer\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_url}}/user/register",
+              "host": [
+                "{{Base_url}}"
+              ],
+              "path": [
+                "user",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Activate",
+      "item": [
+        {
+          "name": "Activate_Agent",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{Admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-AUTH-SECRET-KEY",
+                "value": "{{secretkey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"status\": \"active\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_url}}/user/update/{{Agentid}}",
+              "host": [
+                "{{Base_url}}"
+              ],
+              "path": [
+                "user",
+                "update",
+                "{{Agentid}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Activate_Customer_1",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{Admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-AUTH-SECRET-KEY",
+                "value": "{{secretkey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"status\": \"active\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_url}}/user/update/{{Customer1_id}}",
+              "host": [
+                "{{Base_url}}"
+              ],
+              "path": [
+                "user",
+                "update",
+                "{{Customer1_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Activate_Customer_2",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{Admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-AUTH-SECRET-KEY",
+                "value": "{{secretkey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"status\": \"active\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_url}}/user/update/{{Customer2_id}}",
+              "host": [
+                "{{Base_url}}"
+              ],
+              "path": [
+                "user",
+                "update",
+                "{{Customer2_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "System to Agent Deposit",
+      "item": [
+        {
+          "name": "System_Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsondata = pm.response.json();\r",
+                  "var token = jsondata.token;\r",
+                  "pm.collectionVariables.set(\"System_token\", token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"System\",\r\n  \"password\": \"1234\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_url}}/user/login",
+              "host": [
+                "{{Base_url}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "System_to_Agent_Deposite",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{System_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-AUTH-SECRET-KEY",
+                "value": "{{secretkey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"from_account\": \"SYSTEM\",\r\n  \"to_account\": \"{{AgentphonNumber}}\",\r\n  \"amount\": 5000\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_url}}/transaction/deposit",
+              "host": [
+                "{{Base_url}}"
+              ],
+              "path": [
+                "transaction",
+                "deposit"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Agent Login",
+      "item": [
+        {
+          "name": "Agent_primary_login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{Agentemail}}\",\r\n  \"password\": \"1234\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_url}}/user/login",
+              "host": [
+                "{{Base_url}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Gmail list",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsondata = pm.response.json();\r",
+                  "\r",
+                  "let latestEmailid = jsondata.messages[0].id;\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"Emailid\", latestEmailid);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{G_token}}",
+                "type": "text"
+              },
+              {
+                "key": "",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "https://gmail.googleapis.com/gmail/v1/users/me/messages",
+              "protocol": "https",
+              "host": [
+                "gmail",
+                "googleapis",
+                "com"
+              ],
+              "path": [
+                "gmail",
+                "v1",
+                "users",
+                "me",
+                "messages"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Read email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsondata = pm.response.json();\r",
+                  "\r",
+                  "let snippet = jsondata.snippet;\r",
+                  "\r",
+                  "let otp = snippet.match(/\\b\\d{4}\\b/)[0];\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"OTP\", otp);\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{G_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "https://gmail.googleapis.com/gmail/v1/users/me/messages/{{Emailid}}",
+              "protocol": "https",
+              "host": [
+                "gmail",
+                "googleapis",
+                "com"
+              ],
+              "path": [
+                "gmail",
+                "v1",
+                "users",
+                "me",
+                "messages",
+                "{{Emailid}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Agent verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsondata = pm.response.json();\r",
+                  "var token = jsondata.token;\r",
+                  "pm.collectionVariables.set(\"AGENT_token\", token);\r",
+                  "\r",
+                  "pm.test(\"User can Login Successfully\",function()\r",
+                  "{\r",
+                  "    pm.expect(jsondata.message).to.eql(\"Login successful\");\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"identifier\": \"{{Agentemail}}\",\r\n  \"otp\": \"{{OTP}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_url}}/user/verify-otp",
+              "host": [
+                "{{Base_url}}"
+              ],
+              "path": [
+                "user",
+                "verify-otp"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Agent to customer Deposit",
+      "item": [
+        {
+          "name": "Agent to customer1 deposit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsondata = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Agent can deposit Successfully\",function()\r",
+                  "{\r",
+                  "    pm.expect(jsondata.message).to.eql(\"Deposit successful\");\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AGENT_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-AUTH-SECRET-KEY",
+                "value": "{{secretkey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"from_account\": \"{{AgentphonNumber}}\",\r\n  \"to_account\": \"{{Customer1_phone_number}}\",\r\n  \"amount\": 100\r\n}"
+            },
+            "url": {
+              "raw": "{{Base_url}}/transaction/deposit",
+              "host": [
+                "{{Base_url}}"
+              ],
+              "path": [
+                "transaction",
+                "deposit"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "Base_url",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "secretkey",
+      "value": "ROADTOSDET"
+    },
+    {
+      "key": "Admin_token",
+      "value": ""
+    },
+    {
+      "key": "ramdomID",
+      "value": 993698
+    },
+    {
+      "key": "randomPhoneNumber",
+      "value": "01701993698"
+    },
+    {
+      "key": "Agentid",
+      "value": 48
+    },
+    {
+      "key": "Agentemail",
+      "value": "marjahan6469+137263@gmail.com"
+    },
+    {
+      "key": "AgentphonNumber",
+      "value": "01701137263"
+    },
+    {
+      "key": "Customer1_id",
+      "value": 49
+    },
+    {
+      "key": "Customer1_email",
+      "value": "marjahan6469+841958@gmail.com"
+    },
+    {
+      "key": "Customer1_phone_number",
+      "value": "01701841958"
+    },
+    {
+      "key": "Customer2_id",
+      "value": 50
+    },
+    {
+      "key": "Customer2_email",
+      "value": "marjahan6469+993698@gmail.com"
+    },
+    {
+      "key": "Customer2_phone_number",
+      "value": "01701993698"
+    },
+    {
+      "key": "System_token",
+      "value": ""
+    },
+    {
+      "key": "G_token",
+      "value": ""
+    },
+    {
+      "key": "Emailid",
+      "value": "19e00fc7884dca5b"
+    },
+    {
+      "key": "OTP",
+      "value": "4030"
+    },
+    {
+      "key": "AGENT_token",
+      "value": ""
+    }
+  ]
+}
